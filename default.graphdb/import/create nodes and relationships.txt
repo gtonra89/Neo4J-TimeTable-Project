@@ -1,0 +1,56 @@
+##################################
+Create Nodes
+##################################
+
+
+LOAD CSV WITH HEADERS FROM "file:///C:/Rooms.csv" AS csvLine
+CREATE (n:Room {room: csvLine.room, description: csvLine.description})
+
+
+LOAD CSV WITH HEADERS FROM "file:///C:/Lecturers.csv" AS csvLine
+CREATE (n:Lecturer {lecturer: csvLine.lecturer})
+
+
+LOAD CSV WITH HEADERS FROM "file:///C:/Modules.csv" AS csvLine
+CREATE (n:Module {module: csvLine.module, semester: csvLine.semester})
+
+
+LOAD CSV WITH HEADERS FROM "file:///C:/Groups.csv" AS csvLine
+CREATE (n:Group {group: csvLine.group})
+
+
+
+LOAD CSV WITH HEADERS FROM "file:///C:/TimeSlot.csv" AS csvLine
+CREATE (n:Timeslot {slot: csvLine.slot})
+
+############################################################################
+#################################
+Create Relationships
+#################################
+
+
+USING PERIODIC COMMIT
+LOAD CSV FROM "file:///C:/Lecturer_Timeslot_Relationships.csv" AS row
+MATCH (p1:Lecturer {lecturer: toString(row[0])}), (p2:Timeslot {slot: toString(row[1])})
+CREATE (p1)-[:Lecturing]->(p2);
+
+USING PERIODIC COMMIT
+LOAD CSV FROM "file:///C:/Module_Timeslot_Relationships.csv" AS row
+MATCH (p1:Module {module: toString(row[0])}), (p2:Timeslot {slot: toString(row[1])})
+CREATE (p1)-[:Taught_At]->(p2);
+
+USING PERIODIC COMMIT
+LOAD CSV FROM "file:///C:/Room_Timeslot_Relationships.csv" AS row
+MATCH (p1:Room {room: toString(row[0])}), (p2:Timeslot {slot: toString(row[1])})
+CREATE (p1)-[:In_Use]->(p2);
+
+USING PERIODIC COMMIT
+LOAD CSV FROM "file:///C:/Group_Timeslot_Relationships.csv" AS row
+MATCH (p1:Group {group: toString(row[0])}), (p2:Timeslot {slot: toString(row[1])})
+CREATE (p1)-[:Attends_Class_At]->(p2);
+
+
+USING PERIODIC COMMIT
+LOAD CSV FROM "file:///C:/Lecturer_Module_Relationships.csv" AS row
+MATCH (p1:Lecturer {lecturer: toString(row[0])}), (p2:Module {module: toString(row[1])})
+CREATE (p1)-[:Lecturer_Has_Module]->(p2);

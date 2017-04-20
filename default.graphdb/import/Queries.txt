@@ -1,0 +1,22 @@
+//Match the modules that Group A have at each timeslot
+
+MATCH p=(m:Module)-[:Taught_At]->(t:Timeslot)<-[:Attends_Class_At]-(g:Group) Where g.group CONTAINS "A" return p
+
+//Find  lecturer & room that software testing is in on a monday
+ 
+MATCH p=(l:Lecturer)-[:Lecturer_Has_Module]->(m:Module)-[r:Taught_At]->(t:Timeslot)<-[:In_Use]-(a:Room) where m.module="Software Testing" and a.room="G0481" and  t.slot contains "Monday" RETURN p
+
+//match the lecturer that teaches Graph Theory to group b on wednesday at 12
+
+MATCH p=(l:Lecturer)-[:Lecturer_Has_Module]->(m:Module)-[r:Taught_At]->(t:Timeslot)<-[:In_Use]-(a:Room) where m.module="GRAPH THEORY" and  t.slot contains "Tuesday" RETURN p
+UNION
+MATCH p=(g:Group)-[:Attends_Class_At]->(tt:Timeslot)where g.group="B" AND tt.slot contains "Tuesday at 12" 
+RETURN p
+
+
+
+//Match all lecturers all groups and all modules taught on wednesday
+
+MATCH p=(l:Lecturer)-[:Lecturer_Has_Module]->(m:Module)-[r:Taught_At]->(t:Timeslot)<-[:In_Use]-(a:Room) where t.slot contains "Wednesday" RETURN p
+UNION
+MATCH p=(g:Group)-[:Attends_Class_At]->(tt:Timeslot) where tt.slot contains "Wednesday" RETURN p
